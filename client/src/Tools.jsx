@@ -19,6 +19,7 @@ export default function Tools() {
         if (mutex_lock == false)
         {
             mutex_lock = true;
+            setFormResult("Please wait. We're processing your request!");
             e.preventDefault()
             const formData = new FormData();
             formData.append('pdf', file);
@@ -42,11 +43,11 @@ export default function Tools() {
             <div className="items-row">
                 <div className="input-part">
                     <div className="text-box">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi lobortis vitae velit eget viverra. Proin ut quam at libero porta ultricies id mollis augue. Donec non justo ex. Ut consectetur elit vel aliquet condimentum
+                        Upload your resume in a .pdf format and we'll handle the rest!
                     </div>
 
                     <div className="text-box">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi lobortis vitae velit eget viverra. Proin ut quam at libero porta ultricies id mollis augue. Donec non justo ex. Ut consectetur elit vel aliquet condimentum
+                        "Extract JSON" converts your resume into a JSON string for developers to easily parse! "Evaluate Resume" provides an AI-powered analysis of your resume to identify your current resume's effectiveness and suggest any future changes!
                     </div>
                     <br></br>
                     <form onSubmit={handleSubmit}>

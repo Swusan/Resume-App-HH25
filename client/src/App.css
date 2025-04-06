@@ -137,3 +137,7 @@ input[type="file" i] {
 .heading {
   color: rgb(0, 0, 0);
 }
+
+.centered {
+  text-align: center;
+}
