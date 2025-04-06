@@ -18,7 +18,7 @@ export default function Tools() {
         //Guards against multiple submissions. Wait for the first request to finish.
         if (mutex_lock == false)
         {
-            mutex_lock = true
+            mutex_lock = true;
             e.preventDefault()
             const formData = new FormData();
             formData.append('pdf', file);
@@ -28,12 +28,12 @@ export default function Tools() {
                 body: formData
             });
             
-            if (op) {
+            if (op == true) {
                 setFormResult(JSON.stringify(await response.json()));
             } else {
                 setFormResult(await response.text())
             }
-            mutex_lock = false
+            mutex_lock = false;
         }
       }
 
