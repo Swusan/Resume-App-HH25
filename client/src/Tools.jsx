@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React, {useState} from 'react';
 
 export default function Tools() {
     const [file, setFile] = useState(null);
     const [formResult, setFormResult] = useState(null);
     var op = true;
+    var mutex_lock = false;
 
     function changeOp(newOp) {
         op = newOp;
@@ -15,19 +15,25 @@ export default function Tools() {
     }
     
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        const formData = new FormData();
-        formData.append('pdf', file);
-        formData.append('op', op)
-        const response = await fetch("http://localhost:5000/submit", {
-            method: "POST",
-            body: formData
-        });
-        
-        if (op) {
-            setFormResult(JSON.stringify(await response.json()));
-        } else {
-            setFormResult(await response.text())
+        //Guards against multiple submissions. Wait for the first request to finish.
+        if (mutex_lock == false)
+        {
+            mutex_lock = true
+            e.preventDefault()
+            const formData = new FormData();
+            formData.append('pdf', file);
+            formData.append('op', op)
+            const response = await fetch("http://localhost:5000/submit", {
+                method: "POST",
+                body: formData
+            });
+            
+            if (op) {
+                setFormResult(JSON.stringify(await response.json()));
+            } else {
+                setFormResult(await response.text())
+            }
+            mutex_lock = false
         }
       }
 
@@ -57,7 +63,7 @@ export default function Tools() {
 
                 <div className="output-part">
                     <div className="text-box">
-                    {formResult}
+                        {formResult}
                     </div>
                 </div>
             </div>

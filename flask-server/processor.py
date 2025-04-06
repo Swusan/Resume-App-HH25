@@ -142,8 +142,7 @@ class Processor:
     
     def evaluate_resume(self, user_prompt="", job_target=""): 
         system_prompt = (
-            f"You are a recruiter for a {job_target} position. "
-            "Given a plaintext string with escape sequences from the user that contains the contents of a resume, analyze the resume. Make a lengthy analysis about the contents of the plaintext resume with regards to the presented points and writing style. Outline the effective sections of the resume and provide comments on any improvements required. Format this with escape sequences such that sections are placed within individual paragraphs and bullet points when appropriate. Do not use markdown syntax."
+            f"You are a recruiter for a {job_target} position. Analyze the plaintext string extracted from a resume. Make a lengthy analysis about the contents of the plaintext resume with regards to the presented points and writing style. Outline the effective sections of the resume and provide comments on any possible improvements.\n\nFormatting Guidelines:\nAfter every 2-4 sentences, you must use two new line escape sequences. Do not use markdown syntax. When referring to a section of the plaintext resume, use a 1-10 word summary that best identifies the purpose of the text within the resume, such as \"achievements in your work experience\" or \"responsibilities for Company X\". Do not reuse entire sentences from the plaintext resume unless absolutely necessary.\n\nWhen the analysis is complete, state whether you would hire or offer an interview to the applicant for the specified {job_target} position after reviewing their resume for the specified {job_target} position."
         )
 
         response = self.client.chat.completions.create(
