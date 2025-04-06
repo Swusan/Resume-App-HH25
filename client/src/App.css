@@ -185,6 +185,7 @@ input[type="file" i] {
   position: fixed;
   display: block;
   background-color: rgba(50, 50, 50, 1);
+  background: linear-gradient(270deg, rgb(150, 200, 200) 0%, rgba(125, 200, 175, 1) 100%);
   animation: exit-anim var(--vfx-transition-anim-time) ease-in forwards;
   z-index: 9;
 }
@@ -204,6 +205,7 @@ input[type="file" i] {
   position: fixed;
   display: block;
   background-color: rgba(50, 50, 50, 1);
+  background: linear-gradient(270deg, rgb(150, 200, 200) 0%, rgba(125, 200, 175, 1) 100%);
   animation: enter-anim var(--vfx-transition-anim-time) ease-in forwards;
   z-index: 9;
 }
