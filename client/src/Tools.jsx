@@ -6,9 +6,6 @@ export default function Tools() {
     var mutex_lock = false;
     var responseData;
     const op = useRef("string");
-    function changeOp(newOp) {
-        op = newOp;
-    }
 
     function handleChange(event) {
         setFile(event.target.files[0]);
@@ -35,8 +32,6 @@ export default function Tools() {
                 setFormResult(JSON.stringify(responseData.jsonEval));
             } else if (op.current === "string") {
                 setFormResult(responseData.stringEval);
-            } else {
-                setFormResult("Bad");
             }
             mutex_lock = false;
         }
