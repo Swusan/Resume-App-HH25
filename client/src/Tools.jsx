@@ -18,7 +18,7 @@ export default function Tools() {
             body: formData
         });
         
-        setFormResult(await response.json());
+        setFormResult(JSON.stringify(await response.json()));
       }
 
     return (
