@@ -16,23 +16,23 @@ export default function Tools() {
     
     const handleSubmit = async (e) => {
         //Guards against multiple submissions. Wait for the first request to finish.
-        if (mutex_lock == false)
+        if (mutex_lock === false)
         {
             mutex_lock = true;
             setFormResult("Please wait. We're processing your request!");
-            e.preventDefault()
+            e.preventDefault();
             const formData = new FormData();
             formData.append('pdf', file);
-            formData.append('op', op)
+            formData.append('op', op);
             const response = await fetch("http://localhost:5000/submit", {
                 method: "POST",
                 body: formData
             });
             
-            if (op == true) {
+            if (op === true) {
                 setFormResult(JSON.stringify(await response.json()));
             } else {
-                setFormResult(await response.text())
+                setFormResult(await response.text());
             }
             mutex_lock = false;
         }
@@ -43,18 +43,14 @@ export default function Tools() {
             <div className="items-row">
                 <div className="input-part">
                     <div className="text-box">
-                        Upload your resume in a .pdf format and we'll handle the rest!
-                    </div>
-
-                    <div className="text-box">
-                        "Extract JSON" converts your resume into a JSON string for developers to easily parse! "Evaluate Resume" provides an AI-powered analysis of your resume to identify your current resume's effectiveness and suggest any future changes!
+                        {`Upload your resume in a .pdf format and we'll handle the rest. "Extract JSON" converts your resume into a JSON string for developers to easily parse! "Evaluate Resume" provides an AI-powered analysis of your resume to identify your current resume's effectiveness and suggest any future changes!`}
                     </div>
                     <br></br>
                     <form onSubmit={handleSubmit}>
                         <div className="items-row">
                             <input type="file" id="resume" name="resume" required=""onChange={handleChange}></input>
                         </div>
-                        
+                        <br></br>
                         <div className="items-row">
                             <button className="button-request-style" type="submit" action={changeOp(true)}>Extract JSON</button>
                             <button className="button-request-style" type="submit" action={changeOp(false)}>Evaluate Resume</button>
