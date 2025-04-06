@@ -8,8 +8,6 @@ import fitz # PyMyPDF
 app = Flask(__name__)
 CORS(app)
 
-pdfData = {}
-
 if __name__ == "__main__":
     app.run(debug=True)
 
@@ -23,8 +21,6 @@ pdfProcessor.openai_login()
 @app.route('/submit', methods=['POST'])
 def upload():
     file = request.files['pdf']
-    data = request.form
-    op = data['op']
     
     raw_text = ""
     pdf_stream = file.read()
@@ -34,8 +30,9 @@ def upload():
         raw_text += page.get_text()
     pdf_document.close()
 
-    if (op == True):
-        pdfData = (pdfProcessor.convert_resume(user_prompt=raw_text))
-        return jsonify(pdfData), 200
-    else:
-        return pdfProcessor.evaluate_resume(raw_text, "job")
+    pdfJSON = pdfProcessor.convert_resume(user_prompt=raw_text)
+    pdfEval = pdfProcessor.evaluate_resume(raw_text, "job")
+    
+    data = {'jsonEval': pdfJSON, 'stringEval': pdfEval}
+
+    return jsonify(data), 200
