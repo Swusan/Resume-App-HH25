@@ -59,58 +59,54 @@ class Processor:
                             "work_experience": {
                                 "type": "array",
                                 "items": {
-                                    "experience": {
-                                        "type": "object",
-                                        "properties": {
-                                            "company_name": {
-                                                "type": "string",
-                                                "description": "Name of the company."
-                                            },
-                                            "position": {
-                                                "type": "string",
-                                                "description": "Job title/position that the applicant had within the company."
-                                            },
-                                            "timeframe": {
-                                                "type": "number",
-                                                "description": "Calculate the number of years that an applicant has worked in a specified timeframe. Expect a range of years provided by the applicant. Decimal values are allowed, but they should be limited to \"0.25\", \"0.5\", or \"0.75\". For example, if the string \"2016-2018\" is found, then the output should be 2. As another example, if the string \"Mar 2016 - Nov 2018\" is found, then the output should be 2.75 as exactly 32 months have elapsed, and 2.75 years is the closest valid value which can represent such a difference."
-                                            },
-                                            "desc": {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "string"
-                                                },
-                                                "description": "For each mentioned responsibility/achievement with the experience, create a new string item. Expect plaintext sentences. Consider every responsibility/achievement as one sentence."
-                                            }
+                                    "type": "object",
+                                    "properties": {
+                                        "company_name": {
+                                            "type": "string",
+                                            "description": "Name of the company."
                                         },
-                                        "required": ["company_name", "position", "timeframe", "desc"],
-                                        "additionalProperties": False
-                                    }
+                                        "position": {
+                                            "type": "string",
+                                            "description": "Job title/position that the applicant had within the company."
+                                        },
+                                        "timeframe": {
+                                            "type": "number",
+                                            "description": "Calculate the number of years that an applicant has worked in a specified timeframe. Expect a range of years provided by the applicant. Decimal values are allowed, but they should be limited to \"0.25\", \"0.5\", or \"0.75\". For example, if the string \"2016-2018\" is found, then the output should be 2. As another example, if the string \"Mar 2016 - Nov 2018\" is found, then the output should be 2.75 as exactly 32 months have elapsed, and 2.75 years is the closest valid value which can represent such a difference."
+                                        },
+                                        "desc": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "description": "For each mentioned responsibility/achievement with the experience, create a new string item. Expect plaintext sentences. Consider every responsibility/achievement as one sentence."
+                                        }
+                                    },
+                                    "required": ["company_name", "position", "timeframe", "desc"],
+                                    "additionalProperties": False
                                 },
                                 "description": "For every individually mentioned work experience, usually indicated by a header with the company name, job title, and timeframe, then followed by details about responsibilities/achievements within that position, create a new item with the extracted information. Add no items if no work experience is found."
                             },
                             "education": {
                                 "type": "array",
                                 "items": {
-                                    "experience": {
-                                        "type": "object",
-                                        "properties": {
-                                            "school_name": {
-                                                "type": "string",
-                                                "description": "Name of the school/college/university. Usually within the header of the entry."
-                                            },
-                                            "degree": {
-                                                "type": "string",
-                                                "description": "Degree types.",
-                                                "enum": ["High School Diploma", "Bachelor's Degree", "Master's Degree", "Doctorate", "Other", "!="]
-                                            },
-                                            "gpa": {
-                                                "type": "number",
-                                                "description": "GPA value with 2 decimal places at most. Look for a number that follows the format \"X.X\" or \"X.XX\", where \"X\" is a valid digit."
-                                            },
+                                    "type": "object",
+                                    "properties": {
+                                        "school_name": {
+                                            "type": "string",
+                                            "description": "Name of the school/college/university. Usually within the header of the entry."
                                         },
-                                        "required": ["school_name", "degree", "inventory"],
-                                        "additionalProperties": False
-                                    }
+                                        "degree": {
+                                            "type": "string",
+                                            "description": "Degree types.",
+                                            "enum": ["High School Diploma", "Bachelor's Degree", "Master's Degree", "Doctorate", "Other", "!="]
+                                        },
+                                        "gpa": {
+                                            "type": "number",
+                                            "description": "GPA value with 2 decimal places at most. Look for a number that follows the format \"X.X\" or \"X.XX\", where \"X\" is a valid digit."
+                                        },
+                                    },
+                                    "required": ["school_name", "degree", "gpa"],
+                                    "additionalProperties": False
                                 },
                                 "description": "For every individually mentioned educational institution, usually indicated by a header with the name of the school/college/university/institute, create a new item with the extracted information. Add no items if no education is found."
                             },
@@ -144,39 +140,22 @@ class Processor:
         # print(f"[ DEBUG ] Generated Results: {results}")
         return results
     
-    # Given a plaintext string from a resume and the job that an applicant is applying to, return comments about the resume.
-    def evaluate_resume(self, user_prompt = "", job_target = ""):
-        system_prompt = f"You are a recruiter for a {job_target} position, Given a plaintext string with escape sequences from the user that contains the contents of a resume, analyze the resume."
+    def evaluate_resume(self, user_prompt="", job_target=""): 
+        system_prompt = (
+            f"You are a recruiter for a {job_target} position. "
+            "Given a plaintext string with escape sequences from the user that contains the contents of a resume, analyze the resume. Make a lengthy analysis about the contents of the plaintext resume with regards to the presented points and writing style. Outline the effective sections of the resume and provide comments on any improvements required. Format this with escape sequences such that sections are placed within individual paragraphs and bullet points when appropriate. Do not use markdown syntax."
+        )
 
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": system_prompt}, # Hidden to User, AI Instructions
-                {"role": "user", "content": user_prompt} # Known to User, Resume Input
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
             ],
-            response_format={
-                "type": "string",
-                "json_schema": {
-                    "name": "json_schema",
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "eval": {
-                                "type": "string",
-                                "description": "Make a lengthy analysis about the contents of the plaintext resume with regards to the presented points and writing style. Outline the effective sections of the resume and provide comments on any improvements required. Format this with escape sequences such that sections are placed within individual paragraphs and bullet points when appropriate."
-                            }
-                        }
-                    },
-                    "required": ["eval"],
-                    "additionalProperties": False
-                },
-                "strict": True
-            }
+            response_format={"type": "text"}
         )
 
-        # Dictionary with contents matching the specified schema.
-        # Note that the response content originally appears in string format.
-        results = json.loads(response.choices[0].message.content)
+        # Parse JSON from the response string
+        results = response.choices[0].message.content
 
-        # print(f"[ DEBUG ] Generated Results: {results}")
-        return results["eval"]
+        return results

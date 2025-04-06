@@ -4,6 +4,11 @@ import React, {useState} from 'react';
 export default function Tools() {
     const [file, setFile] = useState(null);
     const [formResult, setFormResult] = useState(null);
+    var op = true;
+
+    function changeOp(newOp) {
+        op = newOp;
+    }
 
     function handleChange(event) {
         setFile(event.target.files[0]);
@@ -13,12 +18,17 @@ export default function Tools() {
         e.preventDefault()
         const formData = new FormData();
         formData.append('pdf', file);
+        formData.append('op', op)
         const response = await fetch("http://localhost:5000/submit", {
             method: "POST",
             body: formData
         });
         
-        setFormResult(JSON.stringify(await response.json()));
+        if (op) {
+            setFormResult(JSON.stringify(await response.json()));
+        } else {
+            setFormResult(await response.text())
+        }
       }
 
     return (
@@ -39,8 +49,8 @@ export default function Tools() {
                         </div>
                         
                         <div className="items-row">
-                            <button className="button-request-style" type="submit">Extract JSON</button>
-                            <button className="button-request-style" type="submit">Evaluate Resume</button>
+                            <button className="button-request-style" type="submit" action={changeOp(true)}>Extract JSON</button>
+                            <button className="button-request-style" type="submit" action={changeOp(false)}>Evaluate Resume</button>
                         </div>
                     </form>
                 </div>
