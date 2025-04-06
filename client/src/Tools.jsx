@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useRef } from 'react';
 
 export default function Tools() {
     const [file, setFile] = useState(null);
     const [formResult, setFormResult] = useState(null);
-    var op = true;
     var mutex_lock = false;
-
+    var responseData;
+    const op = useRef("string");
     function changeOp(newOp) {
         op = newOp;
     }
@@ -23,16 +23,20 @@ export default function Tools() {
             e.preventDefault();
             const formData = new FormData();
             formData.append('pdf', file);
-            formData.append('op', op);
             const response = await fetch("http://localhost:5000/submit", {
                 method: "POST",
                 body: formData
             });
-            
-            if (op === true) {
-                setFormResult(JSON.stringify(await response.json()));
+
+            responseData = await response.json();
+
+            console.log(op)
+            if (op.current === "json") {
+                setFormResult(JSON.stringify(responseData.jsonEval));
+            } else if (op.current === "string") {
+                setFormResult(responseData.stringEval);
             } else {
-                setFormResult(await response.text());
+                setFormResult("Bad");
             }
             mutex_lock = false;
         }
@@ -52,8 +56,8 @@ export default function Tools() {
                         </div>
                         <br></br>
                         <div className="items-row">
-                            <button className="button-request-style" type="submit" action={changeOp(true)}>Extract JSON</button>
-                            <button className="button-request-style" type="submit" action={changeOp(false)}>Evaluate Resume</button>
+                            <button className="button-request-style" onClick={() => op.current = "json"} type="submit">Extract JSON</button>
+                            <button className="button-request-style" onClick={() => op.current = "string"}type="submit">Evaluate Resume</button>
                         </div>
                     </form>
                 </div>
